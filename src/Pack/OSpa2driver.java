@@ -1,4 +1,4 @@
-
+package Pack;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -10,7 +10,7 @@
  *
  * @author Kerly Titus
  */
-public class Driver {
+public class OSpa2driver {
 
     /** 
      * main class

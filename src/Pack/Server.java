@@ -1,3 +1,4 @@
+package Pack;
 
 import java.util.Scanner;
 import java.io.FileInputStream;
@@ -414,19 +415,18 @@ public class Server extends Thread {
      * @param
      */
       
-    public void run()
-    {   Transactions trans = new Transactions();
-    	 long serverStartTime, serverEndTime;
+    public void run() {   
+    	Transactions trans = new Transactions();
+    	long serverStartTime, serverEndTime;
+    	serverStartTime = System.currentTimeMillis();
     
 	/* System.out.println("\n DEBUG : Server.run() - starting server thread " + getServerThreadId() + " " + Network.getServerConnectionStatus()); */
-    	
-	Transactions trans = new Transactions();
-    	long serverStartTime, serverEndTime;
     
 	/* System.out.println("\n DEBUG : Server.run() - starting server thread " + objNetwork.getServerConnectionStatus()); */
     	
     	/* .....................................................................................................................................................................................................*/
-        
+    	serverEndTime = System.currentTimeMillis();
+
         System.out.println("\n Terminating server thread - " + " Running time " + (serverEndTime - serverStartTime) + " milliseconds");
 	
     }

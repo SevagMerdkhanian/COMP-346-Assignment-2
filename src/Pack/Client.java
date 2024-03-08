@@ -1,3 +1,4 @@
+package Pack;
 
 import java.util.Scanner;
 import java.io.FileInputStream;
@@ -219,11 +220,12 @@ public class Client extends Thread {
     {   
     	Transactions transact = new Transactions();
     	long sendClientStartTime, sendClientEndTime, receiveClientStartTime, receiveClientEndTime;
-     
+    	receiveClientStartTime = System.currentTimeMillis();
          /*................................................................................................................................................................................................................*/
-              
+    	receiveClientEndTime = System.currentTimeMillis();
+
                 System.out.println("\n Terminating client receiving thread - " + " Running time " +  (receiveClientEndTime - receiveClientStartTime));
             }
                 
-    }
+    
 }
