@@ -17,7 +17,6 @@ public class OSpa2driver {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        
     	Network objNetwork = new Network( );            /* Activate the network */
         objNetwork.start();
         Client objClient1 = new Client("sending");          /* Start the sending client thread */
@@ -25,8 +24,8 @@ public class OSpa2driver {
         Client objClient2 = new Client("receiving");        /* Start the receiving client thread */
         objClient2.start();
         Server objServer1 = new Server("serverThread1");
-        objServer1.start();
         Server objServer2 = new Server("serverThread2");
+        objServer1.start();
         objServer2.start();
 
        
