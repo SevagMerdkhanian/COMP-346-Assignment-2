@@ -273,14 +273,15 @@ public class Server extends Thread {
          /* Process the accounts until the client disconnects */
          while ((!Network.getClientConnectionStatus().equals("disconnected")))
          {
-//        	 while ( (Network.getInBufferStatus().equals("empty") && !Network.getClientConnectionStatus().equals("disconnected")) ) 
-//        	 { 
-//        		 Thread.yield(); 	/* Yield the cpu if the network input buffer is empty */
-//        	 }
+             while((Network.getInBufferStatus().equals("empty")) && (!Network.getClientConnectionStatus().equals("disconnected"))) 
+             {
+            	 Thread.yield();
+             }   /* Alternatively, busy-wait until the network input buffer is available */
+
         	 
         	 if (!Network.getInBufferStatus().equals("empty"))
         	 { 
-        		 /* System.out.println("\n DEBUG : Server.processTransactions() - transferring in account " + trans.getAccountNumber()); */
+        		 System.out.println("\n DEBUG : Server.processTransactions() - transferring in account " + trans.getAccountNumber());
         		 
         		 Network.transferIn(trans);                              /* Transfer a transaction from the network input buffer */
              
@@ -316,10 +317,10 @@ public class Server extends Thread {
 					} 
 
             	
-//        		 while (Network.getOutBufferStatus().equals("full")) 
-//        		 { 
-//        			 Thread.yield();		/* Yield the cpu if the network output buffer is full */
-//        		 }
+        		 while (Network.getOutBufferStatus().equals("full")) 
+        		 { 
+        			 Thread.yield();		/* Yield the cpu if the network output buffer is full */
+        		 }
         		
         		 System.out.println("\n DEBUG : Server.processTransactions() - transferring out account " + trans.getAccountNumber());
         		 
@@ -415,36 +416,32 @@ public class Server extends Thread {
      * @param
      */
       
-     public void run()
-     {
-         Transactions trans = new Transactions();
-     	long serverStartTime = System.currentTimeMillis();
+    public void run() {
+ 
+		Transactions trans = new Transactions();
+		long startTime = System.currentTimeMillis();
+		
+		System.out.println("\n DEBUG : Server.run() - starting server thread " + Network.getServerConnectionStatus());
+		if (serverThreadId == "serverThread1") {
+		if (this.processTransactions(trans)) {
+            setServerThreadRunningStatus1("terminated");
+		}
+			
+		}
+		if (serverThreadId == "serverThread2") {
+			if (this.processTransactions(trans)) {
+	            setServerThreadRunningStatus2("terminated");
+			}
+			
+			}
+		if(serverThreadRunningStatus1.equals("disconnected") && serverThreadRunningStatus2.equals("disconnected"))
+            Network.disconnect(Network.getServerIP());
+		long endTime = System.currentTimeMillis();
+        System.out.println("\n Terminating server "+serverThreadId+" - " + " Running time " + (endTime - startTime) + " milliseconds");
 
-//     	System.out.println("\n DEBUG : Server.run() - starting server thread " + Network.getServerConnectionStatus());
-     	/* Implement the code for the run method */
-         if (serverThreadId.equals("Thread1")){
-             this.processTransactions(trans);
-             setServerThreadRunningStatus1("terminated");
-         }
-         else if (serverThreadId.equals("Thread2")) {
-             this.processTransactions(trans);
-             setServerThreadRunningStatus2("terminated");
-         }
-         System.out.println("\n Terminating server "+serverThreadId+" - " + " Running time " + (System.currentTimeMillis() - serverStartTime) + " milliseconds");
-
-         if(serverThreadRunningStatus1.equals("terminated") && serverThreadRunningStatus2.equals("terminated")){
-             Network.disconnect(Network.getServerIP());
-         }
-         else{
-             try {
-                 Thread.sleep(1000);
-             } catch (InterruptedException e) {
-                 e.printStackTrace();
-             }
-             Network.disconnect(Network.getServerIP());
-         }
-
-     }
+    	    
+    	
+    }
 }
 
 
