@@ -424,13 +424,13 @@ public class Server extends Thread {
 		System.out.println("\n DEBUG : Server.run() - starting server thread " + Network.getServerConnectionStatus());
 		if (serverThreadId == "serverThread1") {
 		if (this.processTransactions(trans)) {
-            setServerThreadRunningStatus1("terminated");
+            setServerThreadRunningStatus1("disconnected");
 		}
 			
 		}
 		if (serverThreadId == "serverThread2") {
 			if (this.processTransactions(trans)) {
-	            setServerThreadRunningStatus2("terminated");
+	            setServerThreadRunningStatus2("disconnected");
 			}
 			
 			}
