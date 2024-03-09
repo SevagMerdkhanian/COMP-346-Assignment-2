@@ -273,10 +273,10 @@ public class Server extends Thread {
          /* Process the accounts until the client disconnects */
          while ((!Network.getClientConnectionStatus().equals("disconnected")))
          {
-        	// while ( (Network.getInBufferStatus().equals("empty") && !Network.getClientConnectionStatus().equals("disconnected")) ) 
-        	// { 
-        	//	 Thread.yield(); 	/* Yield the cpu if the network input buffer is empty */
-        	// }
+        	 while ( (Network.getInBufferStatus().equals("empty") && !Network.getClientConnectionStatus().equals("disconnected")) ) 
+        	 { 
+        		 Thread.yield(); 	/* Yield the cpu if the network input buffer is empty */
+        	 }
         	 
         	 if (!Network.getInBufferStatus().equals("empty"))
         	 { 
@@ -423,12 +423,12 @@ public class Server extends Thread {
     		Thread.yield();
     	if (getServerThreadId().equals("serverThread1")) {
         	processTransactions(trans);
-
+        	setServerThreadRunningStatus1("disconnected");
     	}
 		if (getServerThreadId().equals("serverThread2")) {
 	    	processTransactions(trans);
-
-		    	}
+        	setServerThreadRunningStatus2("disconnected");
+		 }
 	System.out.println("\n DEBUG : Server.run() - starting server thread " + getServerThreadId() + " " + Network.getServerConnectionStatus());
     
     	

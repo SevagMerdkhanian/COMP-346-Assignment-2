@@ -232,7 +232,7 @@ public class Client extends Thread {
 
      	}    	receiveClientEndTime = System.currentTimeMillis();
 
-                System.out.println("\n Terminating client receiving thread - " + " Running time " +  (receiveClientEndTime - receiveClientStartTime));
+                System.out.println("\n Terminating client " + clientOperation + " thread - " + " Running time " +  (receiveClientEndTime - receiveClientStartTime));
             }
                 
     
