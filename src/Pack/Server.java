@@ -343,7 +343,7 @@ public class Server extends Thread {
    
      public double deposit(int i, double amount)
      {  double curBalance;      /* Current account balance */
-       
+       		synchronized (account[i]) {
      		curBalance = account[i].getBalance( );          /* Get current account balance */
         
      		/* NEW : A server thread is blocked before updating the 10th , 20th, ... 70th account balance in order to simulate an inconsistency situation */
@@ -361,7 +361,8 @@ public class Server extends Thread {
         
      		account[i].setBalance(curBalance + amount);     /* Deposit amount in the account */
      		return account[i].getBalance ();                /* Return updated account balance */
-     }
+       		}
+       		}
          
     /**
      *  Processing of a withdrawal operation in an account
@@ -372,14 +373,15 @@ public class Server extends Thread {
  
      public double withdraw(int i, double amount)
      {  double curBalance;      /* Current account balance */
-        
+		synchronized (account[i]) {
+
      	curBalance = account[i].getBalance( );          /* Get current account balance */
           
         System.out.println("\n DEBUG : Server.withdraw - " + "i " + i + " Current balance " + curBalance + " Amount " + amount + " " + getServerThreadId());
         
         account[i].setBalance(curBalance - amount);     /* Withdraw amount in the account */
         return account[i].getBalance ();                /* Return updated account balance */
-     	
+		}	
      }
 
     /**
@@ -391,13 +393,15 @@ public class Server extends Thread {
  
      public double query(int i)
      {  double curBalance;      /* Current account balance */
-        
+		synchronized (account[i]) {
+
      	curBalance = account[i].getBalance( );          /* Get current account balance */
         
         System.out.println("\n DEBUG : Server.query - " + "i " + i + " Current balance " + curBalance + " " + getServerThreadId()); 
         
         return curBalance;                              /* Return current account balance */
-     }
+		}
+		}
          
      /**
       *  Create a String representation based on the Server Object
