@@ -18,6 +18,7 @@ public class OSpa2driver {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+    	System.out.println("yes");
         Network networkThread = new Network();            /* Activate the network */
         networkThread.start();
         Client sendingClientThread = new Client("sending");

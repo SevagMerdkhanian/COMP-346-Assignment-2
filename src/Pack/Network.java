@@ -26,6 +26,12 @@ public class Network extends Thread {
     private static String inBufferStatus, outBufferStatus;     /* Current status of the network buffers - normal, full, empty */
     private static String networkStatus;                       /* Network status - active, inactive */
        
+    private static Semaphore mutexIn;
+    private static Semaphore mutexOut;
+    private static Semaphore outBufferEmpty;
+    private static Semaphore outBufferFull;
+    private static Semaphore inBufferEmpty;
+    private static Semaphore inBufferFull;
     /** 
      * Constructor of the Network class
      * 
@@ -57,6 +63,13 @@ public class Network extends Thread {
          outputIndexClient = 0;
                 
          networkStatus = "active";
+         
+         mutexIn = new Semaphore(1);
+         mutexOut = new Semaphore(1);
+         outBufferEmpty = new Semaphore(maxNbPackets);
+         outBufferFull = new Semaphore(0);
+         inBufferEmpty = new Semaphore(maxNbPackets);
+         inBufferFull = new Semaphore(0);
       }     
         
      /** 
@@ -354,6 +367,13 @@ public class Network extends Thread {
      */
         public static boolean send(Transactions inPacket)
         {
+        	try {
+                inBufferEmpty.acquire();
+                mutexIn.acquire();
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         	
         		  inComingPacket[inputIndexClient].setAccountNumber(inPacket.getAccountNumber());
         		  inComingPacket[inputIndexClient].setOperationType(inPacket.getOperationType());
@@ -377,6 +397,8 @@ public class Network extends Thread {
         		  {
         			  setInBufferStatus("normal");
         		  }
+        		  mutexIn.release();
+                  inBufferFull.release();
             
             return true;
         }   
@@ -388,6 +410,13 @@ public class Network extends Thread {
      */
          public static boolean receive(Transactions outPacket)
         {
+        	 try {
+                 outBufferEmpty.acquire();
+                 mutexOut.acquire();
+
+             } catch (InterruptedException e) {
+                 e.printStackTrace();
+             }
 
         		 outPacket.setAccountNumber(outGoingPacket[outputIndexClient].getAccountNumber());
         		 outPacket.setOperationType(outGoingPacket[outputIndexClient].getOperationType());
@@ -411,6 +440,8 @@ public class Network extends Thread {
         		 {
         			 setOutBufferStatus("normal"); 
         		 }
+        		 mutexOut.release();
+                 outBufferFull.release();
         	            
              return true;
         }   
@@ -425,6 +456,13 @@ public class Network extends Thread {
      */
          public static boolean transferOut(Transactions outPacket)
         {
+        	  try {
+                  outBufferFull.acquire();
+                  mutexOut.acquire();
+
+              } catch (InterruptedException e) {
+                  e.printStackTrace();
+              }
 	   	
         		outGoingPacket[inputIndexServer].setAccountNumber(outPacket.getAccountNumber());
         		outGoingPacket[inputIndexServer].setOperationType(outPacket.getOperationType());
@@ -448,6 +486,8 @@ public class Network extends Thread {
         		{
         			setOutBufferStatus("normal");
         		}
+        		mutexOut.release();
+                outBufferEmpty.release();
         	            
              return true;
         }   
@@ -460,6 +500,13 @@ public class Network extends Thread {
      */
        public static boolean transferIn(Transactions inPacket)
         {
+    	   try {
+               inBufferFull.acquire();
+               mutexIn.acquire();
+
+           } catch (InterruptedException e) {
+               e.printStackTrace();
+           }
 	
     		     inPacket.setAccountNumber(inComingPacket[outputIndexServer].getAccountNumber());
     		     inPacket.setOperationType(inComingPacket[outputIndexServer].getOperationType());
@@ -483,7 +530,8 @@ public class Network extends Thread {
     		     {
     		    	 setInBufferStatus("normal");
     		     }
-            
+    		     mutexIn.release();
+    	         inBufferEmpty.release();
              return true;
         }   
          

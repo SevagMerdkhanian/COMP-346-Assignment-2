@@ -1,6 +1,7 @@
 package Pack;
 
 import java.util.Scanner;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.InputMismatchException;
@@ -22,6 +23,8 @@ public class Client extends Thread {
     private static int maxNbTransactions;      		/* Maximum number of transactions */
     private static Transactions [] transaction; 	        /* Transactions to be processed */
     private String clientOperation;    			/* sending or receiving */
+    private static boolean sendingFinished = false;
+    private static boolean receivingFinished = false;
        
 	/** Constructor method of Client class
  	 * 
@@ -157,10 +160,10 @@ public class Client extends Thread {
          while (i < getNumberOfTransactions())
          {  
 	
-        	 while (Network.getInBufferStatus().equals("full"))
-        	{ 
-         	  Thread.yield(); 	/* Yield the cpu if the network input buffer is full */
-          }
+//        	 while (Network.getInBufferStatus().equals("full"))
+//        	{ 
+//         	  Thread.yield(); 	/* Yield the cpu if the network input buffer is full */
+//          }
                                               	
             transaction[i].setTransactionStatus("sent");   /* Set current transaction status */
            
@@ -184,10 +187,10 @@ public class Client extends Thread {
          
          while (i < getNumberOfTransactions())
          {   
-        	 while (Network.getOutBufferStatus().equals("empty")) 
-        	 { 
-        		 Thread.yield(); 	/* Yield the cpu if the network output buffer is full */       		 
-        	 }
+//        	 while (Network.getOutBufferStatus().equals("empty")) 
+//        	 { 
+//        		 Thread.yield(); 	/* Yield the cpu if the network output buffer is full */       		 
+//        	 }
                                                                             	
             Network.receive(transact);                               	/* Receive updated transaction from the network buffer */
             
@@ -218,16 +221,32 @@ public class Client extends Thread {
      public void run()
      {
      	long startTime = System.currentTimeMillis();
+     	/* Implement here the code for the run method ... */
          if (clientOperation.equals("sending")){
-             sendTransactions();
+             while(true){
+                 if(Network.getServerConnectionStatus().equals("connected")){
+                     this.sendTransactions();
+                     sendingFinished = true;
+                     break;
+                 }
+                 else{
+                     Thread.yield();
+                 }
+             }
          }
          else if (clientOperation.equals("receiving")) {
              Transactions transact = new Transactions();
-             receiveTransactions(transact);
+             this.receiveTransactions(transact);
+             receivingFinished = true;
+
+         }
+         System.out.println("\n Terminating client " + clientOperation + " thread - " + " Running time " + (System.currentTimeMillis() - startTime) + " milliseconds");
+         if (sendingFinished && receivingFinished){
+
              Network.disconnect(Network.getClientIP());
          }
-         long endTime = System.currentTimeMillis();
-         System.out.println("\n Terminating client " + clientOperation + " thread - " + " Running time " + (endTime - startTime) + " milliseconds");
+
+
      }
                 
     

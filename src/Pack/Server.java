@@ -1,6 +1,7 @@
 package Pack;
 
 import java.util.Scanner;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.InputMismatchException;
@@ -273,10 +274,10 @@ public class Server extends Thread {
          /* Process the accounts until the client disconnects */
          while ((!Network.getClientConnectionStatus().equals("disconnected")))
          {
-             while((Network.getInBufferStatus().equals("empty")) && (!Network.getClientConnectionStatus().equals("disconnected"))) 
-             {
-            	 Thread.yield();
-             }   /* Alternatively, busy-wait until the network input buffer is available */
+//             while((Network.getInBufferStatus().equals("empty")) && (!Network.getClientConnectionStatus().equals("disconnected"))) 
+//             {
+//            	 Thread.yield();
+//             }   /* Alternatively, busy-wait until the network input buffer is available */
 
         	 
         	 if (!Network.getInBufferStatus().equals("empty"))
@@ -317,10 +318,10 @@ public class Server extends Thread {
 					} 
 
             	
-        		 while (Network.getOutBufferStatus().equals("full")) 
-        		 { 
-        			 Thread.yield();		/* Yield the cpu if the network output buffer is full */
-        		 }
+//        		 while (Network.getOutBufferStatus().equals("full")) 
+//        		 { 
+//        			 Thread.yield();		/* Yield the cpu if the network output buffer is full */
+//        		 }
         		
         		 System.out.println("\n DEBUG : Server.processTransactions() - transferring out account " + trans.getAccountNumber());
         		 
@@ -427,22 +428,27 @@ public class Server extends Thread {
 		
 		System.out.println("\n DEBUG : Server.run() - starting server thread " + Network.getServerConnectionStatus());
 		if (serverThreadId == "serverThread1") {
-		if (this.processTransactions(trans)) {
+			this.processTransactions(trans);
             setServerThreadRunningStatus1("disconnected");
 		}
-			
-		}
+
 		if (serverThreadId == "serverThread2") {
-			if (this.processTransactions(trans)) {
-	            setServerThreadRunningStatus2("disconnected");
+			this.processTransactions(trans);
+	        setServerThreadRunningStatus2("disconnected");
 			}
-			
-			}
-		if(serverThreadRunningStatus1.equals("disconnected") && serverThreadRunningStatus2.equals("disconnected"))
-            Network.disconnect(Network.getServerIP());
 		long endTime = System.currentTimeMillis();
         System.out.println("\n Terminating server "+serverThreadId+" - " + " Running time " + (endTime - startTime) + " milliseconds");
 
+		if(serverThreadRunningStatus1.equals("disconnected") && serverThreadRunningStatus2.equals("disconnected"))
+            Network.disconnect(Network.getServerIP());
+		else{
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            Network.disconnect(Network.getServerIP());
+        }
     	    
     	
     }
