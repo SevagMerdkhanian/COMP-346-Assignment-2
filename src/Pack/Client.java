@@ -23,8 +23,8 @@ public class Client extends Thread {
     private static int maxNbTransactions;      		/* Maximum number of transactions */
     private static Transactions [] transaction; 	        /* Transactions to be processed */
     private String clientOperation;    			/* sending or receiving */
-    private static boolean sendingFinished = false;
-    private static boolean receivingFinished = false;
+    private static boolean sendingFinished = false; //static boolean to check if all transactions have been sent
+    private static boolean receivingFinished = false; //static boolean to check if all transactions have been received
        
 	/** Constructor method of Client class
  	 * 
@@ -141,7 +141,7 @@ public class Client extends Thread {
         }
         setNumberOfTransactions(i);		/* Record the number of transactions processed */
         
-        System.out.println("\n DEBUG : Client.readTransactions() - " + getNumberOfTransactions() + " transactions processed"); 
+//        System.out.println("\n DEBUG : Client.readTransactions() - " + getNumberOfTransactions() + " transactions processed"); 
         
         inputStream.close( );
 
@@ -167,7 +167,7 @@ public class Client extends Thread {
                                               	
             transaction[i].setTransactionStatus("sent");   /* Set current transaction status */
            
-            System.out.println("\n DEBUG : Client.sendTransactions() - sending transaction on account " + transaction[i].getAccountNumber()); 
+//            System.out.println("\n DEBUG : Client.sendTransactions() - sending transaction on account " + transaction[i].getAccountNumber()); 
             
             Network.send(transaction[i]);                            /* Transmit current transaction */
             i++;          
@@ -194,7 +194,7 @@ public class Client extends Thread {
                                                                             	
             Network.receive(transact);                               	/* Receive updated transaction from the network buffer */
             
-            System.out.println("\n DEBUG : Client.receiveTransactions() - receiving updated transaction on account " + transact.getAccountNumber());
+//            System.out.println("\n DEBUG : Client.receiveTransactions() - receiving updated transaction on account " + transact.getAccountNumber());
             
             System.out.println(transact);                               /* Display updated transaction */    
             i++;
@@ -221,34 +221,21 @@ public class Client extends Thread {
      public void run()
      {
      	long startTime = System.currentTimeMillis();
-     	/* Implement here the code for the run method ... */
-         if (clientOperation.equals("sending")){
-             while(true){
-                 if(Network.getServerConnectionStatus().equals("connected")){
-                     this.sendTransactions();
-                     sendingFinished = true;
-                     break;
-                 }
-                 else{
-                     Thread.yield();
-                 }
-             }
-         }
-         else if (clientOperation.equals("receiving")) {
+     	if (clientOperation.equals("sending")) {
+            while (!Network.getServerConnectionStatus().equals("connected")) {
+                Thread.yield();
+            }
+            sendTransactions();
+            sendingFinished = true;
+        }
+         if (clientOperation == "receiving") {
              Transactions transact = new Transactions();
-             this.receiveTransactions(transact);
+             receiveTransactions(transact);
              receivingFinished = true;
 
          }
          System.out.println("\n Terminating client " + clientOperation + " thread - " + " Running time " + (System.currentTimeMillis() - startTime) + " milliseconds");
-         if (sendingFinished && receivingFinished){
-
+         if (sendingFinished && receivingFinished)
              Network.disconnect(Network.getClientIP());
-         }
-
-
-     }
-                
-    
-
+     }            
 }
