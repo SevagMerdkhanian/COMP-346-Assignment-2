@@ -18,7 +18,6 @@ public class OSpa2driver {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-    	System.out.println("yes");
         Network networkThread = new Network();            /* Activate the network */
         networkThread.start();
         Client sendingClientThread = new Client("sending");
@@ -27,10 +26,12 @@ public class OSpa2driver {
         receivingClientThread.start();
         Server serverThread1 = new Server("serverThread1");
         Server serverThread2 = new Server("serverThread2");
+        Server serverThread3 = new Server("serverThread3");
         serverThread1.start();
         serverThread2.start();
-
+        serverThread3.start();
         
+
        
     }
     

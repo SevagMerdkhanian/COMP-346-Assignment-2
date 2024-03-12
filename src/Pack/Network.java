@@ -19,8 +19,8 @@ public class Network extends Thread {
     private static String clientIP;                            /* IP number of the client application*/
     private static String serverIP;                            /* IP number of the server application */
     private static int portID;                                 /* Port ID of the client application */
-    private static String clientConnectionStatus;              /* Client connection status - connected, disconnected, idle */
-    private static String serverConnectionStatus;              /* Server connection status - connected, disconnected, idle */
+    private static volatile String clientConnectionStatus;              /* Client connection status - connected, disconnected, idle */
+    private static volatile String serverConnectionStatus;              /* Server connection status - connected, disconnected, idle */
     private static Transactions inComingPacket[];              /* Incoming network buffer */
     private static Transactions outGoingPacket[];              /* Outgoing network buffer */
     private static String inBufferStatus, outBufferStatus;     /* Current status of the network buffers - normal, full, empty */
@@ -622,7 +622,7 @@ public class Network extends Thread {
 	    	
 
 			/* Implement here the code for the run method ... */
-	        while (!clientConnectionStatus.equals("disconnected") && !serverConnectionStatus.equals("disconnected")){
+	        while (!clientConnectionStatus.equals("disconnected") || !serverConnectionStatus.equals("disconnected")){
 	            Thread.yield();
 	        }
 	        

@@ -196,7 +196,7 @@ public class Client extends Thread {
             
 //            System.out.println("\n DEBUG : Client.receiveTransactions() - receiving updated transaction on account " + transact.getAccountNumber());
             
-            System.out.println(transact);                               /* Display updated transaction */    
+            System.out.println(transact + " " +  (i+1));                               /* Display updated transaction */    
             i++;
          } 
     }
@@ -222,13 +222,10 @@ public class Client extends Thread {
      {
      	long startTime = System.currentTimeMillis();
      	if (clientOperation.equals("sending")) {
-            while (!Network.getServerConnectionStatus().equals("connected")) {
-                Thread.yield();
-            }
             sendTransactions();
             sendingFinished = true;
         }
-         if (clientOperation == "receiving") {
+         if (clientOperation.equals("receiving")) {
              Transactions transact = new Transactions();
              receiveTransactions(transact);
              receivingFinished = true;

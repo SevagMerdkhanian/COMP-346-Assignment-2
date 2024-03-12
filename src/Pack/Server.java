@@ -29,7 +29,7 @@ public class Server extends Thread {
 	private String serverThreadId;				 /* Identification of the two server threads - Thread1, Thread2 */
 	private static String serverThreadRunningStatus1;	 /* Running status of thread 1 - idle, running, terminated */
 	private static String serverThreadRunningStatus2;	 /* Running status of thread 2 - idle, running, terminated */
-  
+	private static String serverThreadRunningStatus3;
     /** 
      * Constructor method of Client class
      * 
@@ -55,12 +55,14 @@ public class Server extends Thread {
     			System.out.println("\n Terminating server application, network unavailable");
     			System.exit(0);
     		}
-    	}
-    	else
-    	{
-    		serverThreadId = stid;							/* unshared variable so each thread has its own copy */
-    		serverThreadRunningStatus2 = "idle";				
-    	}
+    	
+    } else if(serverThreadRunningStatus1.equals("idle")&& serverThreadRunningStatus2 == null){
+        serverThreadId = stid; /* unshared variable so each thread has its own copy */
+        serverThreadRunningStatus2 = "idle";
+    }else{
+        serverThreadId = stid;
+        serverThreadRunningStatus3 = "idle";
+    }
     }
   
     /** 
@@ -183,6 +185,10 @@ public class Server extends Thread {
          {
              return serverThreadRunningStatus2;
          }
+         public String getServerThreadRunningStatus3()
+         {
+             return serverThreadRunningStatus3;
+         }
              
         /** 
          * Mutator method of Server class
@@ -193,6 +199,10 @@ public class Server extends Thread {
          public void setServerThreadRunningStatus2(String runningStatus)
          { 
        	  serverThreadRunningStatus2 = runningStatus;
+         }
+         public void setServerThreadRunningStatus3(String runningStatus)
+         { 
+       	  serverThreadRunningStatus3 = runningStatus;
          }
          
     /** 
@@ -437,14 +447,16 @@ public class Server extends Thread {
     	        processTransactions(trans);
     	        setServerThreadRunningStatus2("disconnected");
     	    }
-
-    	    while (!(getServerThreadRunningStatus1().equals("disconnected") && getServerThreadRunningStatus2().equals("disconnected"))) {
-    	        Thread.yield(); 
+    	    if (serverThreadId.equals("serverThread3")) {
+    	        processTransactions(trans);
+    	        setServerThreadRunningStatus3("disconnected");
     	    }
-
     	    long endTime = System.currentTimeMillis();
+
     	    System.out.println("\n Terminating server " + serverThreadId + " - " + " Running time " + (endTime - startTime) + " milliseconds");
-    	    Network.disconnect(Network.getServerIP());
+		    if (getServerThreadRunningStatus1().equals("disconnected") && getServerThreadRunningStatus2().equals("disconnected") && getServerThreadRunningStatus3().equals("disconnected")) 
+		    	Network.disconnect(Network.getServerIP());
+
     	}
 
 }
