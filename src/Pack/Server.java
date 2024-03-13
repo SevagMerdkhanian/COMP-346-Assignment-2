@@ -55,7 +55,7 @@ public class Server extends Thread {
     			System.out.println("\n Terminating server application, network unavailable");
     			System.exit(0);
     		}
-    	
+    		
     } else if(serverThreadRunningStatus1.equals("idle") && serverThreadRunningStatus2 == null){
         serverThreadId = stid; /* unshared variable so each thread has its own copy */
         serverThreadRunningStatus2 = "idle";
