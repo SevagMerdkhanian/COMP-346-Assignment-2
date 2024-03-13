@@ -56,7 +56,7 @@ public class Server extends Thread {
     			System.exit(0);
     		}
     	
-    } else if(serverThreadRunningStatus1.equals("idle")&& serverThreadRunningStatus2 == null){
+    } else if(serverThreadRunningStatus1.equals("idle") && serverThreadRunningStatus2 == null){
         serverThreadId = stid; /* unshared variable so each thread has its own copy */
         serverThreadRunningStatus2 = "idle";
     }else{

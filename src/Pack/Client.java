@@ -196,7 +196,7 @@ public class Client extends Thread {
             
 //            System.out.println("\n DEBUG : Client.receiveTransactions() - receiving updated transaction on account " + transact.getAccountNumber());
             
-            System.out.println(transact + " " +  (i+1));                               /* Display updated transaction */    
+            System.out.println(transact);                               /* Display updated transaction */    
             i++;
          } 
     }
